@@ -1,0 +1,6 @@
+{
+  "server": "backup01.intern.firma.local",
+  "api_token": "eyJhbGciOi...",
+  "admin_mail": "admin@firma.de",
+  "debug": true
+}

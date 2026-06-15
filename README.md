@@ -79,9 +79,8 @@ Zugriff für Administratoren: Ein 5-facher Klick auf das Copyright-Label im Foot
 ##🛑 WICHTIGER HINWEIS FÜR NUTZER:
 Mit der Nutzung dieses Programms und/oder des Quellcodes erklärt sich der Anwender mit den nachfolgenden Bedingungen, Haftungsausschlüssen und Lizenzvorgaben ausdrücklich, unwiderruflich und rechtsverbindlich einverstanden.
 
-================================================================================
-          LIZENZBEDINGUNGEN, MARKENRECHT & RECHTLICHER HAFTUNGSAUSSCHLUSS
-================================================================================
+======= LIZENZBEDINGUNGEN, MARKENRECHT & RECHTLICHER HAFTUNGSAUSSCHLUSS ========
+
 Projekt: ZUG2-FeRD (Community Edition)
 Urheber: Bereitgestellt von Privatperson an Gewerbetreibende (B2B)
 Gewinnabsicht: KEINE (Kostenfreies Open-Source-Gemeinschaftsprojekt)
@@ -119,17 +118,13 @@ Jedem Anwender wird hiermit das kostenfreie, nicht-exklusive Recht eingeräumt,
 diese Software im Rahmen seiner gewerblichen oder privaten Tätigkeit zu nutzen,
 zu kopieren und auszuführen, sofern folgende Bedingungen erfüllt sind:
 
-1. Beibehaltung der Hinweise: Der rechtliche B2B-Disclaimer im Footer der gra-
+1. Beibehaltung der Hinweise: Der rechtliche B2B-Disclaimer im Footer der gra
    fischen Benutzeroberfläche (GUI) sowie alle Copyright-Hinweise dürfen weder
    entfernt, modifiziert noch unkenntlich gemacht werden.
 2. Keine kommerzielle Weiterveräußerung: Es ist untersagt, diese Software oder
    Teile davon als eigenständiges Produkt gegen Entgelt zu verkaufen oder zu vermieten.
-3. Audit-Trail-Integrität: Die integrierten Mechanismen zur forensischen Proto-
-   kollierung (Schatten-Log `.sys_cache.dat`) dienen der Beweissicherung im
-   Schadensfall. Die gezielte Manipulation oder Löschung dieser Sicherheits-
-   komponente zum Zweck der Täuschung führt zum sofortigen Erlöschen der Nutzungserlaubnis.
-
 3. MARKENRECHTLICHE ABGRENZUNG (§ 23 MARKENG)
+
 --------------------------------------------------------------------------------
 Der gewählte Projektname „ZUG2-FeRD“ ist eine unabhängige Bezeichnung für dieses
 freie Software-Werkzeug.

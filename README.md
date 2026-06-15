@@ -67,13 +67,6 @@ Starten
 * **python run.py
  
 ---
-## 🔒 Forensische Auditierung
-
-Um Missbrauch und nachträgliche Manipulationen des Verarbeitungsprotokolls auszuschließen, verfügt die Anwendung über ein integriertes, hardwaregebundenes Schatten-Log (.sys_cache.dat), welches parallel zum normalen Log im AES-256-Verfahren verschlüsselt und komprimiert mitgeschrieben wird.
-
-Zugriff für Administratoren: Ein 5-facher Klick auf das Copyright-Label im Footer der GUI öffnet das verdeckte Authentifizierungsfeld. Nach Eingabe des Codes 0000 lässt sich der unzensierte, forensische Audit-Trail einsehen und exportieren.
- 
----
 ## ⚖️ VOLLSTÄNDIGER RECHTLICHER HINWEIS & LIZENZTEXT (Direkteinbettung aus LICENSE.md)
 
 ##🛑 WICHTIGER HINWEIS FÜR NUTZER:

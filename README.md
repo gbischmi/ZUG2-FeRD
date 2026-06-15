@@ -9,8 +9,8 @@
 </p>
 
 <p align="center">
-  <a href="https://codeberg.org/gbischmi/ZUG2-FeRD"><strong>Codeberg Haupt-Repository</strong></a> | 
-  <a href="https://github.com/gbischmi/ZUG2-FeRD"><strong>GitHub Mirror</strong></a>
+  <a href="https://codeberg.org/gbischmi/ZUG2-FeRD"><img src="https://img.shields.io/badge/Codeberg-Main_Repo-blue?style=flat-square&logo=codeberg&logoColor=white" alt="Codeberg Main Repo"></a>
+  <a href="https://github.com/gbischmi/ZUG2-FeRD"><img src="https://img.shields.io/badge/GitHub-Mirror-gray?style=flat-square&logo=github&logoColor=white" alt="GitHub Mirror"></a>
 </p>
 
 ---
@@ -22,7 +22,7 @@ In der heutigen B2B-Praxis stehen kleine und mittelständische Unternehmen (KMU)
 1. **Das unvollständige Layout:** Branchensoftware erzeugt zwar oft valide ZUGFeRD-XML-Datensätze, das visuelle PDF-Dokument ist jedoch häufig ungestaltet, fehlerhaft und enthält kein Firmen-Corporate-Identity (fehlendes digitales Briefpapier). Dadurch fehlen im sichtbaren Teil oft zwingende Pflichtangaben nach § 14 Abs. 4 UStG.
 2. **Die Dokumenten-Zersplitterung:** Wichtige **rechnungsbegründende Unterlagen (RBU)** wie Aufmaßblätter, Arbeits-/Einsatznachweise, Baustellenberichte, Bilder oder Abnahmeprotokolle werden separat verschickt. Weder Sender noch Empfänger verfügen im Standard über eine Software, die diese Anlagen sauber mit dem maschinenlesbaren XML-Datensatz in einem einzigen Container verheiratet.
 
-**ZUG2-FeRD** setzt genau hier an – als praktisches, lizenzkostenfreies Hilfsmittel von privat für Gewerbetreibende. Wir *"Ziehen zu FeRD"*, indem wir die originale E-Rechnung, optionale visuelle Briefbögen und alle Anlagen zu einem einzigen, rechtssicheren **PDF/A-3b-Belegpaket** verschmelzen.
+**ZUG2-FeRD** setzt genau hier an – als praktisches, lizenzkostenfreies Hilfsmittel von privat für Gewerbetreibende. Wir *"Ziehen zu FeRD"*, indem wir die originale E-Rechnung, optionale visuelle Briefbögen und alle Anlagen zu einem einzigen, rechtssicheren **PDF/A-3b-Belegpaket** verschmelzen. Sowohl auf der Seite der Rechnungssteller als auch auf der Seite der Rechnungsempfänger ist eine stabile Belegpaket-Verarbeitung in den genutzten Anwendungen leider immer noch kein einheitlich sauber abgebildeter Standard.
 
 ---
 

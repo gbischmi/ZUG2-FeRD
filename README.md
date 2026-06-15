@@ -1,7 +1,7 @@
 # ZUG2-FeRD // Community Edition
 
 <p align="center">
-  <img src="assets/logo.png" alt="ZUG2-FeRD Logo" width="220">
+  <img src="zug2ferd/ui/logo.png" alt="ZUG2-FeRD Logo" width="220">
 </p>
 
 <p align="center">

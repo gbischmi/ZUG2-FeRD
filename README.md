@@ -85,7 +85,7 @@ Projekt: ZUG2-FeRD (Community Edition)
 Urheber: Bereitgestellt von Privatperson an Gewerbetreibende (B2B)
 Gewinnabsicht: KEINE (Kostenfreies Open-Source-Gemeinschaftsprojekt)
 
-1. HAFTUNGSBUSSCHLUSS NACH DEUTSCHEM SCHENKUNGSRECHT (§ 521 BGB)
+1. HAFTUNGSAUSSCHLUSS NACH DEUTSCHEM SCHENKUNGSRECHT (§ 521 BGB)
 --------------------------------------------------------------------------------
 Die Bereitstellung dieser Software ("ZUG2-FeRD") erfolgt vollständig unentgelt-
 lich und ohne jede Absicht der Einnahmen- oder Gewinnerzielung. Rechtlich handelt

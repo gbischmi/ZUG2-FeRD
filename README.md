@@ -41,15 +41,6 @@ In der heutigen B2B-Praxis stehen kleine und mittelständische Unternehmen (KMU)
 
 Das Projekt ist streng nach dem Prinzip der **portablen Kapselung** aufgebaut. Die Anwendung läuft vollständig autark innerhalb ihres Stammverzeichnisses, benötigt keine globalen System-Installationen und lässt sich rückstandslos verschieben (z.B. auf USB-Sticks).
 
-```text
-/main
- ├── bin/             <- Lokaler Speicherort für Mustang-CLI (.jar)
- ├── packages/        <- Isoliertes, portables OpenJDK (JRE Runtime)
- ├── log/             <- Transparente, menschlesbare Logfiles (365 Tage Rotation)
- ├── stationery/      <- Relativ abgelegte Briefbogen-Vorlagen (PDF)
- ├── assets/          <- Anwendungs-Assets (logo.png)
- └── .sys_cache.dat   <- Getarntes, AES-256 verschlüsseltes forensisches Audit-Log
- 
 ---
 ## 🚀 Installation & Start
 

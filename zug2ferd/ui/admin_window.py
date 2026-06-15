@@ -11,6 +11,8 @@ class AdminWindow(QtWidgets.QDialog):
         self.setWindowTitle("Admin")
         self.setModal(False)
         self.resize(780, 520)
+        if parent is not None:
+            self.setWindowIcon(parent.windowIcon())
 
         self._text = QtWidgets.QTextEdit()
         self._text.setReadOnly(True)

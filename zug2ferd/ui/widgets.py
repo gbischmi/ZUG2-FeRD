@@ -168,3 +168,103 @@ class PdfDropLineEdit(QtWidgets.QLineEdit):
                 event.acceptProposedAction()
                 return
         event.ignore()
+
+
+class DocumentTableWidget(QtWidgets.QTableWidget):
+    files_dropped = Signal(list)
+    empty_clicked = Signal()
+    rows_reordered = Signal()
+
+    def __init__(self, parent: QtWidgets.QWidget | None = None) -> None:
+        super().__init__(0, 3, parent)
+        self.setAcceptDrops(True)
+        self.setDragDropMode(QtWidgets.QAbstractItemView.DragDropMode.InternalMove)
+        self.setDragDropOverwriteMode(False)
+        self.setDropIndicatorShown(True)
+        self.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
+        self.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.SingleSelection)
+        self.setEditTriggers(QtWidgets.QAbstractItemView.EditTrigger.NoEditTriggers)
+        self.setAlternatingRowColors(False)
+        self.setShowGrid(False)
+        self.setWordWrap(False)
+        self.setObjectName("DocumentTable")
+        self.setHorizontalHeaderLabels(["Typ", "Datei", "Format"])
+        self.horizontalHeader().setStretchLastSection(False)
+        self.horizontalHeader().setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
+        self.horizontalHeader().setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeMode.Stretch)
+        self.horizontalHeader().setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
+        self.verticalHeader().setVisible(False)
+        self.setMinimumHeight(260)
+        self.setMouseTracking(True)
+        self.setStyleSheet(
+            "QTableWidget#DocumentTable {"
+            "background-color: #171b22;"
+            "border: 2px dashed #3a3f4a;"
+            "border-radius: 14px;"
+            "gridline-color: transparent;"
+            "}"
+            "QTableWidget#DocumentTable::item {"
+            "padding: 8px;"
+            "border-bottom: 1px solid #20252f;"
+            "}"
+            "QHeaderView::section {"
+            "background-color: #0c0e12;"
+            "color: #cfd3dc;"
+            "padding: 8px;"
+            "border: 0;"
+            "font-weight: 600;"
+            "}"
+        )
+
+    def dragEnterEvent(self, event: QtGui.QDragEnterEvent) -> None:
+        if event.mimeData().hasUrls():
+            event.acceptProposedAction()
+            self._set_hover(True)
+            return
+        super().dragEnterEvent(event)
+
+    def dragLeaveEvent(self, event: QtGui.QDragLeaveEvent) -> None:
+        self._set_hover(False)
+        super().dragLeaveEvent(event)
+
+    def dropEvent(self, event: QtGui.QDropEvent) -> None:
+        self._set_hover(False)
+        if event.mimeData().hasUrls():
+            paths: List[str] = []
+            for url in event.mimeData().urls():
+                if url.isLocalFile():
+                    paths.append(url.toLocalFile())
+            if paths:
+                self.files_dropped.emit(paths)
+                event.acceptProposedAction()
+                return
+
+        super().dropEvent(event)
+        self.rows_reordered.emit()
+
+    def mousePressEvent(self, event: QtGui.QMouseEvent) -> None:
+        if self.itemAt(event.pos()) is None and event.button() == QtCore.Qt.MouseButton.LeftButton:
+            self.empty_clicked.emit()
+        super().mousePressEvent(event)
+
+    def _set_hover(self, hover: bool) -> None:
+        color = "#4da3ff" if hover else "#3a3f4a"
+        self.setStyleSheet(
+            "QTableWidget#DocumentTable {"
+            "background-color: #171b22;"
+            f"border: 2px dashed {color};"
+            "border-radius: 14px;"
+            "gridline-color: transparent;"
+            "}"
+            "QTableWidget#DocumentTable::item {"
+            "padding: 8px;"
+            "border-bottom: 1px solid #20252f;"
+            "}"
+            "QHeaderView::section {"
+            "background-color: #0c0e12;"
+            "color: #cfd3dc;"
+            "padding: 8px;"
+            "border: 0;"
+            "font-weight: 600;"
+            "}"
+        )

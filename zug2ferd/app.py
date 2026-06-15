@@ -1,12 +1,14 @@
 from __future__ import annotations
 
+import ctypes
+import platform
 import sys
 
 from zug2ferd.core.deps import DependencyManager
 from zug2ferd.core.paths import build_paths, detect_project_root, ensure_runtime_dirs
 from zug2ferd.core.settings import SettingsStore
 from zug2ferd.core.telemetry import setup_telemetry
-from zug2ferd.qt import QtCore, QtWidgets
+from zug2ferd.qt import QtCore, QtGui, QtWidgets
 from zug2ferd.ui.main_window import MainWindow
 
 
@@ -75,9 +77,42 @@ def _apply_dark_fluent_style(app: QtWidgets.QApplication) -> None:
     )
 
 
+def _set_optional_qt_attribute(attribute_name: str) -> None:
+    attr_enum = getattr(QtCore.Qt, "ApplicationAttribute", None)
+    if attr_enum is None:
+        return
+    attr_value = getattr(attr_enum, attribute_name, None)
+    if attr_value is None:
+        return
+    QtCore.QCoreApplication.setAttribute(attr_value, True)
+
+
+def _configure_windows_app_id() -> None:
+    if platform.system().lower() != "windows":
+        return
+    try:
+        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("ZUG2FeRD.CommunityEdition")
+    except Exception:
+        return
+
+
+def _build_app_icon(logo_path) -> QtGui.QIcon:
+    icon = QtGui.QIcon()
+    if logo_path.exists():
+        icon.addFile(str(logo_path), QtCore.QSize(16, 16))
+        icon.addFile(str(logo_path), QtCore.QSize(24, 24))
+        icon.addFile(str(logo_path), QtCore.QSize(32, 32))
+        icon.addFile(str(logo_path), QtCore.QSize(48, 48))
+        icon.addFile(str(logo_path), QtCore.QSize(64, 64))
+        icon.addFile(str(logo_path), QtCore.QSize(128, 128))
+        icon.addFile(str(logo_path), QtCore.QSize(256, 256))
+    return icon
+
+
 def run(argv: list[str]) -> int:
-    QtCore.QCoreApplication.setAttribute(QtCore.Qt.ApplicationAttribute.AA_EnableHighDpiScaling, True)
-    QtCore.QCoreApplication.setAttribute(QtCore.Qt.ApplicationAttribute.AA_UseHighDpiPixmaps, True)
+    _set_optional_qt_attribute("AA_EnableHighDpiScaling")
+    _set_optional_qt_attribute("AA_UseHighDpiPixmaps")
+    _configure_windows_app_id()
 
     root = detect_project_root()
     paths = build_paths(root)
@@ -88,6 +123,13 @@ def run(argv: list[str]) -> int:
     settings.load()
 
     app = QtWidgets.QApplication(argv)
+    app.setApplicationName("ZUG2-FeRD")
+    app.setApplicationDisplayName("ZUG2-FeRD Community Edition")
+    if hasattr(app, "setDesktopFileName"):
+        app.setDesktopFileName("zug2ferd-community-edition")
+    app_icon = _build_app_icon(paths.logo_path)
+    if not app_icon.isNull():
+        app.setWindowIcon(app_icon)
     _apply_dark_fluent_style(app)
 
     deps = DependencyManager(paths, telemetry)

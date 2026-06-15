@@ -16,6 +16,8 @@ class AppSettings:
     stationery_apply_all_pages: bool = True
     branding_seller_name: Optional[str] = None
     branding_seller_tax_id: Optional[str] = None
+    import_dir_path: Optional[str] = None
+    export_dir_path: Optional[str] = None
 
 
 class SettingsStore:
@@ -48,6 +50,8 @@ class SettingsStore:
                 stationery_apply_all_pages=bool(data.get("stationery_apply_all_pages", True)),
                 branding_seller_name=data.get("branding_seller_name") or None,
                 branding_seller_tax_id=data.get("branding_seller_tax_id") or None,
+                import_dir_path=data.get("import_dir_path") or None,
+                export_dir_path=data.get("export_dir_path") or None,
             )
             return self._settings
 
@@ -60,8 +64,27 @@ class SettingsStore:
             self._settings.stationery_rel_path = rel_path
         self.save()
 
+    def set_import_dir_path(self, path: Optional[str]) -> None:
+        with self._lock:
+            self._settings.import_dir_path = path
+        self.save()
+
+    def set_export_dir_path(self, path: Optional[str]) -> None:
+        with self._lock:
+            self._settings.export_dir_path = path
+        self.save()
+
     def resolve_stationery_path(self) -> Optional[Path]:
         rel = self._settings.stationery_rel_path
+        return self._resolve_relative_path(rel, expect_dir=False)
+
+    def resolve_import_dir(self) -> Optional[Path]:
+        return self._resolve_path_string(self._settings.import_dir_path, expect_dir=True)
+
+    def resolve_export_dir(self) -> Optional[Path]:
+        return self._resolve_path_string(self._settings.export_dir_path, expect_dir=True)
+
+    def _resolve_relative_path(self, rel: Optional[str], expect_dir: bool) -> Optional[Path]:
         if not rel:
             return None
         p = (self._root / rel).resolve()
@@ -69,7 +92,25 @@ class SettingsStore:
             p.relative_to(self._root.resolve())
         except Exception:
             return None
-        return p if p.exists() else None
+        if not p.exists():
+            return None
+        if expect_dir and not p.is_dir():
+            return None
+        if not expect_dir and not p.is_file():
+            return None
+        return p
+
+    def _resolve_path_string(self, path_str: Optional[str], expect_dir: bool) -> Optional[Path]:
+        if not path_str:
+            return None
+        p = Path(path_str).expanduser()
+        if not p.exists():
+            return None
+        if expect_dir and not p.is_dir():
+            return None
+        if not expect_dir and not p.is_file():
+            return None
+        return p
 
     def set_ustg_check_enabled(self, enabled: bool) -> None:
         with self._lock:
@@ -94,6 +135,12 @@ class SettingsStore:
             self._settings.branding_seller_name = seller_name
             self._settings.branding_seller_tax_id = tax_id
         self.save()
+
+    def set_import_dir_from_absolute(self, path: Optional[Path]) -> None:
+        self.set_import_dir_path(str(path) if path is not None else None)
+
+    def set_export_dir_from_absolute(self, path: Optional[Path]) -> None:
+        self.set_export_dir_path(str(path) if path is not None else None)
 
     def matches_branding(self, seller_name: Optional[str], tax_ids: tuple[str, ...]) -> bool:
         if not self.has_branding():

@@ -7,6 +7,7 @@ from pathlib import Path
 @dataclass(frozen=True)
 class AppPaths:
     root_dir: Path
+    assets_dir: Path
     bin_dir: Path
     packages_dir: Path
     log_dir: Path
@@ -19,6 +20,10 @@ class AppPaths:
     def system_log_path(self) -> Path:
         return self.log_dir / "system.log"
 
+    @property
+    def logo_path(self) -> Path:
+        return self.assets_dir / "logo.png"
+
 
 def detect_project_root() -> Path:
     return Path(__file__).resolve().parents[2]
@@ -27,6 +32,7 @@ def detect_project_root() -> Path:
 def build_paths(root_dir: Path) -> AppPaths:
     return AppPaths(
         root_dir=root_dir,
+        assets_dir=root_dir / "assets",
         bin_dir=root_dir / "bin",
         packages_dir=root_dir / "packages",
         log_dir=root_dir / "log",

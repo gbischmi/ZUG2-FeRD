@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 import os
 import subprocess
 import uuid
@@ -71,7 +72,7 @@ def stamp_pdf_underlay(
 
     for idx, page in enumerate(reader.pages):
         if apply_all_pages or idx == 0:
-            bg = st_page0.copy()
+            bg = copy.deepcopy(st_page0)
             bg.merge_page(page)
             writer.add_page(bg)
         else:
@@ -196,7 +197,7 @@ def _ensure_minimal_xmp(writer, attachment_name: str) -> None:
 def _build_facturx_xmp(attachment_name: str) -> str:
     uid = str(uuid.uuid4())
     return (
-        '<?xpacket begin="﻿" id="W5M0MpCehiHzreSzNTczkc9d"?>\n'
+        '<?xpacket begin="\ufeff" id="W5M0MpCehiHzreSzNTczkc9d"?>\n'
         '<x:xmpmeta xmlns:x="adobe:ns:meta/">\n'
         ' <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">\n'
         '  <rdf:Description rdf:about="" xmlns:pdfaid="http://www.aiim.org/pdfa/ns/id/">\n'

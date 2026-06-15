@@ -7,7 +7,8 @@ from pathlib import Path
 @dataclass(frozen=True)
 class AppPaths:
     root_dir: Path
-    assets_dir: Path
+    # Zentrale UI-Ressourcen (Logo/Icon) liegen bewusst direkt unter zug2ferd/ui.
+    ui_dir: Path
     bin_dir: Path
     packages_dir: Path
     log_dir: Path
@@ -22,7 +23,7 @@ class AppPaths:
 
     @property
     def logo_path(self) -> Path:
-        return self.assets_dir / "logo.png"
+        return self.ui_dir / "logo.png"
 
 
 def detect_project_root() -> Path:
@@ -32,7 +33,7 @@ def detect_project_root() -> Path:
 def build_paths(root_dir: Path) -> AppPaths:
     return AppPaths(
         root_dir=root_dir,
-        assets_dir=root_dir / "assets",
+        ui_dir=root_dir / "zug2ferd" / "ui",
         bin_dir=root_dir / "bin",
         packages_dir=root_dir / "packages",
         log_dir=root_dir / "log",

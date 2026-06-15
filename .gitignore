@@ -8,7 +8,21 @@ __pycache__/
 .zug2ferd_settings.json
 log/
 stationery/
+tmp/*
+!tmp/.gitkeep
 
-# Automatisch bezogene Abhängigkeiten (Dependencies)
-bin/
-packages/
+# Automatisch bezogene Abhängigkeiten (Dependencies & JRE)
+bin/*
+!bin/.gitkeep
+packages/*
+!packages/.gitkeep
+
+# Temporäre Download- und Entpackungs-Reste
+*.tmp
+.*.tmp
+.jre_extract.tmp/
+
+# PyInstaller / Build-Reste
+build/
+dist/
+*.spec

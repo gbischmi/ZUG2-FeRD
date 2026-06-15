@@ -5,7 +5,13 @@ import platform
 import sys
 
 from zug2ferd.core.deps import DependencyManager
-from zug2ferd.core.paths import build_paths, detect_project_root, ensure_runtime_dirs
+from zug2ferd.core.paths import (
+    build_paths,
+    detect_project_root,
+    detect_runtime_root,
+    ensure_runtime_dirs,
+    migrate_transient_runtime,
+)
 from zug2ferd.core.settings import SettingsStore
 from zug2ferd.core.telemetry import setup_telemetry
 from zug2ferd.qt import QtCore, QtGui, QtWidgets
@@ -115,11 +121,13 @@ def run(argv: list[str]) -> int:
     _configure_windows_app_id()
 
     root = detect_project_root()
-    paths = build_paths(root)
+    runtime_root = detect_runtime_root(root)
+    migrated, migration_errors = migrate_transient_runtime(root, runtime_root)
+    paths = build_paths(root, runtime_root)
     ensure_runtime_dirs(paths)
 
     telemetry = setup_telemetry(str(paths.system_log_path), str(paths.sys_cache_path))
-    settings = SettingsStore(paths.settings_path, paths.root_dir)
+    settings = SettingsStore(paths.settings_path, paths.runtime_dir)
     settings.load()
 
     app = QtWidgets.QApplication(argv)
@@ -138,11 +146,16 @@ def run(argv: list[str]) -> int:
 
     telemetry.logger.info("Systemstart abgeschlossen.")
     telemetry.logger.info(f"Root: {paths.root_dir}")
+    telemetry.logger.info(f"Runtime: {paths.runtime_dir}")
     telemetry.logger.info(f"bin/: {paths.bin_dir}")
     telemetry.logger.info(f"packages/: {paths.packages_dir}")
     telemetry.logger.info(f"log/: {paths.log_dir}")
     telemetry.logger.info(f".sys_cache.dat: {paths.sys_cache_path}")
     telemetry.logger.info(f"settings: {paths.settings_path}")
+    if migrated:
+        telemetry.logger.info("Runtime-Migration: übernommen: " + ", ".join(migrated))
+    if migration_errors:
+        telemetry.logger.info("Runtime-Migration: Fehler: " + ", ".join(migration_errors))
 
     QtCore.QTimer.singleShot(50, deps.start_background_bootstrap)
 

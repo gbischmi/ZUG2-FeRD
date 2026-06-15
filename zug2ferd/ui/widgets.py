@@ -173,14 +173,17 @@ class PdfDropLineEdit(QtWidgets.QLineEdit):
 class DocumentTableWidget(QtWidgets.QTableWidget):
     files_dropped = Signal(list)
     empty_clicked = Signal()
-    rows_reordered = Signal()
+    rows_reordered = Signal(int, int)
 
     def __init__(self, parent: QtWidgets.QWidget | None = None) -> None:
         super().__init__(0, 3, parent)
+        self._drag_row = -1
         self.setAcceptDrops(True)
         self.setDragDropMode(QtWidgets.QAbstractItemView.DragDropMode.InternalMove)
         self.setDragDropOverwriteMode(False)
         self.setDropIndicatorShown(True)
+        self.setDragEnabled(True)
+        self.setDefaultDropAction(QtCore.Qt.DropAction.MoveAction)
         self.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
         self.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.SingleSelection)
         self.setEditTriggers(QtWidgets.QAbstractItemView.EditTrigger.NoEditTriggers)
@@ -221,11 +224,24 @@ class DocumentTableWidget(QtWidgets.QTableWidget):
             event.acceptProposedAction()
             self._set_hover(True)
             return
+        if event.source() is self:
+            event.acceptProposedAction()
+            return
         super().dragEnterEvent(event)
+
+    def dragMoveEvent(self, event: QtGui.QDragMoveEvent) -> None:
+        if event.mimeData().hasUrls() or event.source() is self:
+            event.acceptProposedAction()
+            return
+        super().dragMoveEvent(event)
 
     def dragLeaveEvent(self, event: QtGui.QDragLeaveEvent) -> None:
         self._set_hover(False)
         super().dragLeaveEvent(event)
+
+    def startDrag(self, supportedActions: QtCore.Qt.DropAction) -> None:
+        self._drag_row = self.currentRow()
+        super().startDrag(supportedActions)
 
     def dropEvent(self, event: QtGui.QDropEvent) -> None:
         self._set_hover(False)
@@ -239,8 +255,19 @@ class DocumentTableWidget(QtWidgets.QTableWidget):
                 event.acceptProposedAction()
                 return
 
+        if event.source() is self and self._drag_row >= 0:
+            pos = event.position().toPoint() if hasattr(event, "position") else event.pos()
+            target_row = self.rowAt(pos.y())
+            if target_row < 0:
+                target_row = self.rowCount()
+            elif self.dropIndicatorPosition() == QtWidgets.QAbstractItemView.DropIndicatorPosition.BelowItem:
+                target_row += 1
+            self.rows_reordered.emit(self._drag_row, target_row)
+            self._drag_row = -1
+            event.acceptProposedAction()
+            return
+
         super().dropEvent(event)
-        self.rows_reordered.emit()
 
     def mousePressEvent(self, event: QtGui.QMouseEvent) -> None:
         if self.itemAt(event.pos()) is None and event.button() == QtCore.Qt.MouseButton.LeftButton:

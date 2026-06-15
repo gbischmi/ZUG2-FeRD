@@ -162,7 +162,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self._btn_import = QtWidgets.QPushButton("Dokumente hinzufügen")
         self._btn_import.clicked.connect(self._open_import_dialog)
-        self._btn_build = QtWidgets.QPushButton("Erzeugen & prüfen (Mustang)")
+        self._btn_build = QtWidgets.QPushButton("Zusammenführen")
         self._btn_build.setEnabled(False)
         self._btn_build.clicked.connect(self._start_build_pipeline)
         self._btn_reset = QtWidgets.QPushButton("Reset")
@@ -622,23 +622,23 @@ class MainWindow(QtWidgets.QMainWindow):
 
         return True
 
-    def _on_rows_reordered(self) -> None:
-        if self._document_table.rowCount() == 0:
+    def _on_rows_reordered(self, source_row: int, target_row: int) -> None:
+        if not self._documents:
+            return
+        if source_row < 0 or source_row >= len(self._documents):
             return
 
-        by_path = {str(doc.path): doc for doc in self._documents}
-        reordered: list[DocumentEntry] = []
-        for row in range(self._document_table.rowCount()):
-            item = self._document_table.item(row, 1)
-            if item is None:
-                continue
-            path_str = item.data(ROLE_PATH)
-            if path_str in by_path:
-                reordered.append(by_path[path_str])
-        if len(reordered) == len(self._documents):
-            self._documents = reordered
-            self._telemetry.logger.info("Belegreihenfolge manuell angepasst.")
+        target_index = max(0, min(target_row, len(self._documents)))
+        if target_index > source_row:
+            target_index -= 1
+        if target_index == source_row:
             self._refresh_document_table()
+            return
+
+        moved = self._documents.pop(source_row)
+        self._documents.insert(target_index, moved)
+        self._telemetry.logger.info("Belegreihenfolge manuell angepasst.")
+        self._refresh_document_table()
 
     def _start_compliance_recheck(self) -> None:
         invoice = self._get_invoice_document()
@@ -729,7 +729,7 @@ class MainWindow(QtWidgets.QMainWindow):
         except Exception as exc:
             self._telemetry.logger.info("Briefbogen konnte nicht gespeichert werden: " + str(exc))
             return
-        rel = dest.relative_to(self._paths.root_dir).as_posix()
+        rel = dest.relative_to(self._paths.runtime_dir).as_posix()
         self._settings.set_stationery_rel(rel)
         self._stationery_line.setText(dest.name)
         self._telemetry.logger.info(f"Briefbogen gesetzt: {dest.name}")
@@ -789,6 +789,9 @@ class MainWindow(QtWidgets.QMainWindow):
             )
             return
 
+        if not self._confirm_primary_document_choice():
+            return
+
         if not self._settings.settings.validate_with_mustang:
             QtWidgets.QMessageBox.warning(
                 self,
@@ -827,6 +830,30 @@ class MainWindow(QtWidgets.QMainWindow):
                 tmp_output,
             )
         )
+
+    def _confirm_primary_document_choice(self) -> bool:
+        if not self._documents:
+            return False
+
+        first_doc = self._documents[0]
+        if first_doc.kind == "invoice":
+            return True
+
+        dialog = QtWidgets.QMessageBox(self)
+        dialog.setIcon(QtWidgets.QMessageBox.Icon.Warning)
+        dialog.setWindowTitle("Primäres Dokument bestätigen")
+        dialog.setText(
+            "Die erste Position des Belegpakets ist aktuell kein E-Rechnungsdokument, sondern ein RBU-/PDF-Dokument. "
+            "Soll dieses Dokument wirklich als primäre Merge-Basis verwendet werden?"
+        )
+        dialog.setInformativeText(
+            "Die eingebettete XML der vorhandenen E-Rechnung bleibt dabei erhalten. Der spätere Exportname kann "
+            "anschließend weiterhin separat gewählt werden."
+        )
+        continue_button = dialog.addButton("Ja, so zusammenführen", QtWidgets.QMessageBox.ButtonRole.AcceptRole)
+        dialog.addButton("Abbrechen", QtWidgets.QMessageBox.ButtonRole.RejectRole)
+        dialog.exec()
+        return dialog.clickedButton() is continue_button
 
     @QtCore.pyqtSlot(object) if hasattr(QtCore, "pyqtSlot") else QtCore.Slot(object)
     def _on_build_done_main(self, result: object) -> None:

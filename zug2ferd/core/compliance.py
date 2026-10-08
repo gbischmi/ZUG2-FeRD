@@ -29,6 +29,7 @@ class ComplianceResult:
 class InvoicePayload:
     xml_bytes: bytes
     seller: SellerData
+    filespec_name: Optional[str] = None
 
 
 def extract_invoice_payload(invoice_pdf_path: Path) -> InvoicePayload:

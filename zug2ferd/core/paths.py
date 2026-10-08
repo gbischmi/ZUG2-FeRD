@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
+import json
+import os
 import sys
 import tempfile
 import shutil
@@ -34,7 +36,39 @@ def detect_project_root() -> Path:
     return Path(__file__).resolve().parents[2]
 
 
+# Zeigerdatei, die der "ZUG2-FeRD Installer" neben die ZUG2-FeRD.exe schreibt.
+# Inhalt: {"data_dir": "<Datenverzeichnis>"} – Umgebungsvariablen (%ProgramData% …) sind erlaubt.
+RUNTIME_POINTER_FILENAME = "zug2ferd_runtime.json"
+# Optionale Übersteuerung (z. B. für Tests): Umgebungsvariable mit dem Datenverzeichnis.
+RUNTIME_ENV_VAR = "ZUG2FERD_DATA_DIR"
+
+
+def _expand(raw: str) -> Path:
+    return Path(os.path.expandvars(raw.strip())).expanduser()
+
+
+def _read_runtime_pointer(exe_dir: Path) -> Path | None:
+    pointer = exe_dir / RUNTIME_POINTER_FILENAME
+    if not pointer.is_file():
+        return None
+    try:
+        data = json.loads(pointer.read_text(encoding="utf-8-sig"))
+    except Exception:
+        return None
+    raw = data.get("data_dir") if isinstance(data, dict) else None
+    if not isinstance(raw, str) or not raw.strip():
+        return None
+    return _expand(raw)
+
+
 def detect_runtime_root(project_root: Path) -> Path:
+    env_dir = os.environ.get(RUNTIME_ENV_VAR, "")
+    if env_dir.strip():
+        return _expand(env_dir)
+    if getattr(sys, "frozen", False):
+        installed = _read_runtime_pointer(Path(sys.executable).resolve().parent)
+        if installed is not None:
+            return installed
     if getattr(sys, "frozen", False) or "_MEI" in project_root.name:
         return Path(tempfile.gettempdir()) / "ZUG2-FeRD"
     return project_root

@@ -36,6 +36,9 @@ class StatusLamp(QtWidgets.QFrame):
         if state == "ok":
             color = "#1f8f5f"
             text = "OK"
+        elif state == "unsafe":
+            color = "#e68a00"
+            text = "UNSICHER"
         elif state == "warn":
             color = "#d8a600"
             text = "WARNUNG"
